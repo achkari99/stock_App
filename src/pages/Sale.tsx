@@ -168,7 +168,7 @@ const Sale = () => {
                         const stock = getAvailableStock(product);
                         const totalStock = getTotalStock(product);
                         return (
-                          <SelectItem key={product.id} value={product.id} disabled={stock === 0}>
+                          <SelectItem key={product.id} value={product.id} disabled={totalStock === 0}>
                             {product.code} - {product.designation} (Stock total: {totalStock})
                           </SelectItem>
                         );
