@@ -152,7 +152,9 @@ const Products = () => {
                   <TableHead>Code</TableHead>
                   <TableHead>Désignation</TableHead>
                   <TableHead className="text-right">Prix (DH)</TableHead>
-                  <TableHead className="text-right">Stock {currentDepot}</TableHead>
+                  <TableHead className="text-right">Stock A</TableHead>
+                  <TableHead className="text-right">Stock B</TableHead>
+                  <TableHead className="text-right">Stock C</TableHead>
                   <TableHead className="text-right">Stock total</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -170,7 +172,9 @@ const Products = () => {
                       <TableCell className="font-medium">{product.code}</TableCell>
                       <TableCell>{product.designation}</TableCell>
                       <TableCell className="text-right">{product.price.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">{getStock(product)}</TableCell>
+                      <TableCell className="text-right">{product.stockA}</TableCell>
+                      <TableCell className="text-right">{product.stockB}</TableCell>
+                      <TableCell className="text-right">{product.stockC}</TableCell>
                       <TableCell className="text-right font-semibold">{getTotalStock(product)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
