@@ -26,6 +26,10 @@ const Sale = () => {
     return product.stockC;
   };
 
+  const getTotalStock = (product: Product) => {
+    return product.stockA + product.stockB + product.stockC;
+  };
+
   const addItem = () => {
     if (!selectedProduct || !quantity) {
       toast.error("Veuillez sélectionner un produit et une quantité");
@@ -162,9 +166,10 @@ const Sale = () => {
                     <SelectContent>
                       {products.map((product) => {
                         const stock = getAvailableStock(product);
+                        const totalStock = getTotalStock(product);
                         return (
                           <SelectItem key={product.id} value={product.id} disabled={stock === 0}>
-                            {product.code} - {product.designation} (Stock: {stock})
+                            {product.code} - {product.designation} (Stock total: {totalStock})
                           </SelectItem>
                         );
                       })}
