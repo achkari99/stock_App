@@ -9,12 +9,32 @@ import { Search, Printer, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sale } from "@/types";
+import { Sale, Depot } from "@/types";
+import { buildInvoiceHtml } from "@/templates/invoice";
 
 const History = () => {
   const { sales, clients } = useApp();
   const [search, setSearch] = useState("");
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+  const depotOrder: Depot[] = ["A", "B", "C"];
+
+  const formatDistribution = (sale: Sale, item: Sale["items"][number]) => {
+    const distribution =
+      item.quantityPerDepot ??
+      ({
+        [sale.depot]: item.quantity,
+      } as Partial<Record<Depot, number>>);
+
+    return (
+      depotOrder
+        .map((depot) => {
+          const qty = distribution[depot] ?? 0;
+          return qty > 0 ? `${depot}:${qty}` : null;
+        })
+        .filter(Boolean)
+        .join(" | ") || "-"
+    );
+  };
 
   const filteredSales = sales.filter(
     (s) =>
@@ -29,182 +49,7 @@ const History = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
-    const invoiceHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Facture ${sale.invoiceNumber}</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            padding: 40px;
-            color: #333;
-          }
-          .header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 3px solid #2563eb;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-          }
-          .company {
-            font-weight: bold;
-            font-size: 20px;
-          }
-          .invoice-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2563eb;
-          }
-          .info-section {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-          }
-          .info-box {
-            width: 48%;
-          }
-          .info-box h3 {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2563eb;
-          }
-          .info-box p {
-            margin: 5px 0;
-            font-size: 13px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-          }
-          th {
-            background-color: #2563eb;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-size: 13px;
-          }
-          td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            font-size: 13px;
-          }
-          .text-right {
-            text-align: right;
-          }
-          .totals {
-            width: 350px;
-            margin-left: auto;
-            margin-top: 20px;
-          }
-          .totals div {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 15px;
-            border-bottom: 1px solid #ddd;
-          }
-          .totals .total-ttc {
-            background-color: #2563eb;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-          }
-          .footer {
-            margin-top: 50px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <div class="company">VOTRE ENTREPRISE</div>
-            <p style="margin: 5px 0; font-size: 13px;">Adresse de l'entreprise</p>
-            <p style="margin: 5px 0; font-size: 13px;">Téléphone: +212 XXX XXX XXX</p>
-            <p style="margin: 5px 0; font-size: 13px;">ICE: XXXXXXXXXXXXXXX</p>
-          </div>
-          <div style="text-align: right;">
-            <div class="invoice-title">FACTURE</div>
-            <p style="margin: 5px 0; font-size: 14px;">${sale.invoiceNumber}</p>
-            <p style="margin: 5px 0; font-size: 13px;">Date: ${format(new Date(sale.date), "dd/MM/yyyy", { locale: fr })}</p>
-            <p style="margin: 5px 0; font-size: 13px;">Dépôt: ${sale.depot}</p>
-          </div>
-        </div>
-
-        <div class="info-section">
-          <div class="info-box">
-            <h3>CLIENT</h3>
-            <p><strong>${client.name}</strong></p>
-            <p>${client.address}</p>
-            <p>ICE: ${client.ice}</p>
-            <p>IF/TVA: ${client.ifTva}</p>
-            <p>Tél: ${client.phone}</p>
-            <p>Email: ${client.email}</p>
-          </div>
-          <div class="info-box">
-            <h3>INFORMATIONS DE PAIEMENT</h3>
-            <p>Mode de paiement: À définir</p>
-            <p>Conditions: À définir</p>
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Désignation</th>
-              <th class="text-right">Quantité</th>
-              <th class="text-right">Prix unitaire</th>
-              <th class="text-right">Total HT</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sale.items
-              .map(
-                (item) => `
-              <tr>
-                <td>${item.productCode}</td>
-                <td>${item.designation}</td>
-                <td class="text-right">${item.quantity}</td>
-                <td class="text-right">${item.unitPrice.toFixed(2)} DH</td>
-                <td class="text-right">${item.total.toFixed(2)} DH</td>
-              </tr>
-            `
-              )
-              .join("")}
-          </tbody>
-        </table>
-
-        <div class="totals">
-          <div>
-            <span>Total HT:</span>
-            <span>${sale.totalHT.toFixed(2)} DH</span>
-          </div>
-          <div>
-            <span>TVA (20%):</span>
-            <span>${sale.tva.toFixed(2)} DH</span>
-          </div>
-          <div class="total-ttc">
-            <span>Total TTC:</span>
-            <span>${sale.totalTTC.toFixed(2)} DH</span>
-          </div>
-        </div>
-
-        <div class="footer">
-          <p>Merci de votre confiance</p>
-          <p>Cette facture est générée électroniquement et ne nécessite pas de signature</p>
-        </div>
-      </body>
-      </html>
-    `;
+    const invoiceHTML = buildInvoiceHtml(sale, client);
 
     printWindow.document.write(invoiceHTML);
     printWindow.document.close();
@@ -343,6 +188,7 @@ const History = () => {
                         <TableHead>Désignation</TableHead>
                         <TableHead className="text-right">Qté</TableHead>
                         <TableHead className="text-right">P.U.</TableHead>
+                        <TableHead className="text-right">Repartition</TableHead>
                         <TableHead className="text-right">Total</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -353,6 +199,9 @@ const History = () => {
                           <TableCell>{item.designation}</TableCell>
                           <TableCell className="text-right">{item.quantity}</TableCell>
                           <TableCell className="text-right">{item.unitPrice.toFixed(2)} DH</TableCell>
+                          <TableCell className="text-right text-xs text-muted-foreground">
+                            {formatDistribution(selectedSale, item)}
+                          </TableCell>
                           <TableCell className="text-right">{item.total.toFixed(2)} DH</TableCell>
                         </TableRow>
                       ))}
@@ -398,3 +247,4 @@ const History = () => {
 };
 
 export default History;
+

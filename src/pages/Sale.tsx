@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,51 +7,123 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Trash2, ShoppingCart } from "lucide-react";
-import { Sale as SaleType, SaleItem, Product, Client } from "@/types";
+import { Sale as SaleType, SaleItem, Product, Client, Depot } from "@/types";
 import { toast } from "sonner";
 
 const Sale = () => {
   const { currentDepot, products, clients, sales, updateData, invoiceCounter } = useApp();
+  const depotOrder: Depot[] = ["A", "B", "C"];
+  const stockKeyByDepot: Record<Depot, keyof Product> = {
+    A: "stockA",
+    B: "stockB",
+    C: "stockC",
+  };
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedClientId, setSelectedClientId] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [distribution, setDistribution] = useState<Record<Depot, string>>({
+    A: "",
+    B: "",
+    C: "",
+  });
   const [items, setItems] = useState<SaleItem[]>([]);
 
   const selectedProduct = products.find((p) => p.id === selectedProductId);
   const selectedClient = clients.find((c) => c.id === selectedClientId);
 
-  const getAvailableStock = (product: Product) => {
-    if (currentDepot === "A") return product.stockA;
-    if (currentDepot === "B") return product.stockB;
-    return product.stockC;
+  const getDepotStock = (product: Product, depot: Depot) => {
+    return product[stockKeyByDepot[depot]];
   };
 
   const getTotalStock = (product: Product) => {
     return product.stockA + product.stockB + product.stockC;
   };
 
+  useEffect(() => {
+    setDistribution({
+      A: "",
+      B: "",
+      C: "",
+    });
+  }, [selectedProductId]);
+
+  const handleDistributionChange = (depot: Depot, value: string) => {
+    if (!/^\d*$/.test(value)) {
+      return;
+    }
+    setDistribution((prev) => ({
+      ...prev,
+      [depot]: value,
+    }));
+  };
+
+  const totalSelectedQuantity = depotOrder.reduce((sum, depot) => {
+    const parsed = distribution[depot] ? parseInt(distribution[depot], 10) : 0;
+    return sum + (Number.isNaN(parsed) ? 0 : parsed);
+  }, 0);
+
+  const totalAvailableForSelected = selectedProduct ? getTotalStock(selectedProduct) : 0;
+
+  const formatDistribution = (item: SaleItem) => {
+    const distributionForItem =
+      item.quantityPerDepot ??
+      ({
+        [currentDepot]: item.quantity,
+      } as Partial<Record<Depot, number>>);
+
+    return (
+      depotOrder
+        .map((depot) => {
+          const qty = distributionForItem[depot] ?? 0;
+          return qty > 0 ? `${depot}:${qty}` : null;
+        })
+        .filter(Boolean)
+        .join(" | ") || "-"
+    );
+  };
+
   const addItem = () => {
-    if (!selectedProduct || !quantity) {
-      toast.error("Veuillez sélectionner un produit et une quantité");
+    if (!selectedProduct) {
+      toast.error("Veuillez selectionner un produit");
       return;
     }
 
-    const qty = parseInt(quantity);
-    const available = getAvailableStock(selectedProduct);
+    const quantityByDepot = depotOrder.reduce((acc, depot) => {
+      const value = distribution[depot];
+      const parsed = value ? parseInt(value, 10) : 0;
+      acc[depot] = Number.isNaN(parsed) ? 0 : parsed;
+      return acc;
+    }, {} as Record<Depot, number>);
 
-    if (qty <= 0) {
-      toast.error("La quantité doit être supérieure à 0");
+    const totalSelected = depotOrder.reduce(
+      (sum, depot) => sum + quantityByDepot[depot],
+      0
+    );
+
+    if (totalSelected <= 0) {
+      toast.error("La quantite totale doit etre superieure a 0");
       return;
     }
 
-    if (qty > available) {
-      toast.error(`Stock insuffisant. Disponible: ${available}`);
-      return;
+    const availableByDepot = depotOrder.reduce(
+      (acc, depot) => ({
+        ...acc,
+        [depot]: selectedProduct ? getDepotStock(selectedProduct, depot) : 0,
+      }),
+      {} as Record<Depot, number>
+    );
+
+    for (const depot of depotOrder) {
+      if (quantityByDepot[depot] > availableByDepot[depot]) {
+        toast.error(
+          `Stock insuffisant pour le depot ${depot}. Disponible: ${availableByDepot[depot]}`
+        );
+        return;
+      }
     }
 
     const existingItem = items.find((i) => i.productId === selectedProduct.id);
     if (existingItem) {
-      toast.error("Ce produit est déjà dans la liste");
+      toast.error("Ce produit est deja dans la liste");
       return;
     }
 
@@ -59,15 +131,22 @@ const Sale = () => {
       productId: selectedProduct.id,
       productCode: selectedProduct.code,
       designation: selectedProduct.designation,
-      quantity: qty,
+      quantity: totalSelected,
       unitPrice: selectedProduct.price,
-      total: qty * selectedProduct.price,
+      total: totalSelected * selectedProduct.price,
+      quantityPerDepot: quantityByDepot,
     };
 
-    setItems([...items, newItem]);
+    setItems((prev) => [
+      ...prev,
+      {
+        ...newItem,
+        quantityPerDepot: { ...newItem.quantityPerDepot },
+      },
+    ]);
     setSelectedProductId("");
-    setQuantity("");
-    toast.success("Article ajouté");
+    setDistribution({ A: "", B: "", C: "" });
+    toast.success("Article ajoute");
   };
 
   const removeItem = (productId: string) => {
@@ -76,14 +155,14 @@ const Sale = () => {
 
   const calculateTotals = () => {
     const totalHT = items.reduce((sum, item) => sum + item.total, 0);
-    const tva = totalHT * 0.2; // TVA 20%
+    const tva = totalHT * 0.2;
     const totalTTC = totalHT + tva;
     return { totalHT, tva, totalTTC };
   };
 
   const validateSale = () => {
     if (!selectedClient) {
-      toast.error("Veuillez sélectionner un client");
+      toast.error("Veuillez selectionner un client");
       return;
     }
 
@@ -103,24 +182,38 @@ const Sale = () => {
       depot: currentDepot,
       clientId: selectedClient.id,
       clientName: selectedClient.name,
-      items: [...items],
+      items: items.map((item) => ({
+        ...item,
+        quantityPerDepot: {
+          ...(item.quantityPerDepot ??
+            ({
+              [currentDepot]: item.quantity,
+            } as Partial<Record<Depot, number>>)),
+        },
+      })),
       totalHT,
       tva,
       totalTTC,
     };
 
-    // Update stock
     const updatedProducts = products.map((product) => {
       const saleItem = items.find((i) => i.productId === product.id);
-      if (!saleItem) return product;
-
-      if (currentDepot === "A") {
-        return { ...product, stockA: product.stockA - saleItem.quantity };
-      } else if (currentDepot === "B") {
-        return { ...product, stockB: product.stockB - saleItem.quantity };
-      } else {
-        return { ...product, stockC: product.stockC - saleItem.quantity };
+      if (!saleItem) {
+        return product;
       }
+
+      const distributionForItem =
+        saleItem.quantityPerDepot ??
+        ({
+          [currentDepot]: saleItem.quantity,
+        } as Partial<Record<Depot, number>>);
+
+      return {
+        ...product,
+        stockA: product.stockA - (distributionForItem.A ?? 0),
+        stockB: product.stockB - (distributionForItem.B ?? 0),
+        stockC: product.stockC - (distributionForItem.C ?? 0),
+      };
     });
 
     updateData({
@@ -129,10 +222,11 @@ const Sale = () => {
       invoiceCounter: invoiceCounter + 1,
     });
 
-    // Reset form
     setItems([]);
     setSelectedClientId("");
-    toast.success(`Vente enregistrée - Facture: ${newInvoiceNumber}`);
+    setSelectedProductId("");
+    setDistribution({ A: "", B: "", C: "" });
+    toast.success(`Vente enregistree - Facture: ${newInvoiceNumber}`);
   };
 
   const { totalHT, tva, totalTTC } = calculateTotals();
@@ -142,7 +236,7 @@ const Sale = () => {
       <div>
         <h1 className="text-3xl font-bold">Nouvelle vente</h1>
         <p className="text-muted-foreground">
-          Dépôt actuel: <span className="font-semibold">{currentDepot}</span>
+          Depot actuel: <span className="font-semibold">{currentDepot}</span>
         </p>
       </div>
 
@@ -152,7 +246,7 @@ const Sale = () => {
             <CardHeader>
               <CardTitle>Ajouter un article</CardTitle>
               <CardDescription>
-                Sélectionnez un produit et la quantité
+                Choisissez un produit puis repartissez la quantite sur les depots
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -161,42 +255,78 @@ const Sale = () => {
                   <Label>Produit</Label>
                   <Select value={selectedProductId} onValueChange={setSelectedProductId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un produit" />
+                      <SelectValue placeholder="Selectionner un produit" />
                     </SelectTrigger>
                     <SelectContent>
                       {products.map((product) => {
-                        const stock = getAvailableStock(product);
                         const totalStock = getTotalStock(product);
+                        const breakdown = depotOrder
+                          .map((depot) => `${depot}:${getDepotStock(product, depot)}`)
+                          .join(" | ");
                         return (
-                          <SelectItem key={product.id} value={product.id} disabled={totalStock === 0}>
-                            {product.code} - {product.designation} (Stock total: {totalStock})
+                          <SelectItem
+                            key={product.id}
+                            value={product.id}
+                            disabled={totalStock === 0}
+                          >
+                            {product.code} - {product.designation} (Total: {totalStock}) [{breakdown}]
                           </SelectItem>
                         );
                       })}
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="quantity">Quantité</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="quantity"
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      placeholder="0"
-                    />
-                    <Button onClick={addItem}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
                   {selectedProduct && (
-                    <p className="text-xs text-muted-foreground">
-                      Prix unitaire: {selectedProduct.price.toFixed(2)} DH
-                    </p>
+                    <>
+                      <p className="text-xs text-muted-foreground">
+                        Stock total: {getTotalStock(selectedProduct)} - A:{selectedProduct.stockA} | B:{selectedProduct.stockB} | C:{selectedProduct.stockC}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Prix unitaire: {selectedProduct.price.toFixed(2)} DH
+                      </p>
+                    </>
                   )}
+                </div>
+                <div className="space-y-3">
+                  <Label className="block">Repartition par depot</Label>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {depotOrder.map((depot) => {
+                      const available = selectedProduct
+                        ? getDepotStock(selectedProduct, depot)
+                        : 0;
+                      return (
+                        <div key={depot} className="space-y-1">
+                          <Label className="text-xs font-medium text-muted-foreground">
+                            Depot {depot}
+                          </Label>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={distribution[depot]}
+                            onChange={(event) =>
+                              handleDistributionChange(depot, event.target.value)
+                            }
+                            placeholder="0"
+                            disabled={!selectedProduct}
+                          />
+                          <p className="text-[11px] text-muted-foreground">
+                            Disponible: {available}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Quantite totale selectionnee</span>
+                    <span className="font-semibold text-foreground">
+                      {totalSelectedQuantity} / {totalAvailableForSelected}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={addItem}
+                    disabled={!selectedProduct || totalSelectedQuantity === 0}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -209,7 +339,7 @@ const Sale = () => {
             <CardContent>
               {items.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
-                  Aucun article ajouté
+                  Aucun article ajoute
                 </p>
               ) : (
                 <div className="rounded-md border">
@@ -217,10 +347,11 @@ const Sale = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Code</TableHead>
-                        <TableHead>Désignation</TableHead>
-                        <TableHead className="text-right">Qté</TableHead>
+                        <TableHead>Designation</TableHead>
+                        <TableHead className="text-right">Qte</TableHead>
                         <TableHead className="text-right">P.U. (DH)</TableHead>
                         <TableHead className="text-right">Total (DH)</TableHead>
+                        <TableHead className="text-right">Repartition</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -233,6 +364,9 @@ const Sale = () => {
                           <TableCell className="text-right">{item.unitPrice.toFixed(2)}</TableCell>
                           <TableCell className="text-right font-semibold">
                             {item.total.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right text-xs text-muted-foreground">
+                            {formatDistribution(item)}
                           </TableCell>
                           <TableCell className="text-right">
                             <Button
@@ -260,7 +394,7 @@ const Sale = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Label>Sélectionner le client</Label>
+                <Label>Selectionner le client</Label>
                 <Select value={selectedClientId} onValueChange={setSelectedClientId}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choisir un client" />
@@ -286,7 +420,7 @@ const Sale = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Récapitulatif</CardTitle>
+              <CardTitle>Recapitulatif</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex justify-between">

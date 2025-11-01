@@ -4,6 +4,11 @@
 
 **URL**: https://lovable.dev/projects/334c4688-776a-42b9-af67-9f266c5bf7b0
 
+## Nouveautes
+
+- Le tableau de bord affiche maintenant des statistiques detaillees pour le depot selectionne (stock disponible, valeur estimee, ventes rattachees).
+- La page Nouvelle vente permet de repartir chaque article sur les depots A, B et C tout en respectant les stocks disponibles.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
@@ -35,6 +40,20 @@ npm i
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+### Run it as a desktop app (Electron)
+
+Make sure dependencies are installed and then:
+
+```sh
+# Start Vite and Electron together
+npm run electron:dev
+
+# Create production desktop bundles for Windows, macOS, and Linux
+npm run electron:build
+```
+
+The build output is generated inside `dist/` (Vite assets) and the Electron distributables inside `dist/` plus platform-specific folders created by `electron-builder`. Add platform icons under `resources/` before packaging to brand the installers.
 
 **Edit a file directly in GitHub**
 

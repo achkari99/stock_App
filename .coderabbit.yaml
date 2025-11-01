@@ -1,0 +1,21 @@
+# Reference: https://coderabbit.ai/docs/reference/config
+# Adjust this file to fine-tune CodeRabbit's behaviour for this project.
+version: 1
+
+pull_request:
+  review:
+    instructions:
+      - "Focus on correctness of stock calculations, depot statistics, and invoice generation."
+      - "Call out missing tests or validation for sales, depots, and client data."
+      - "Flag UI/UX regressions that could impact printing or Electron packaging."
+    path_filters:
+      include:
+        - "src/**"
+      exclude:
+        - "dist/**"
+        - "electron/**"
+        - "**/*.md"
+
+merge:
+  strategy: squash
+  require_up_to_date: true

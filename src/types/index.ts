@@ -27,6 +27,7 @@ export interface SaleItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  quantityPerDepot?: Record<Depot, number>;
 }
 
 export interface Sale {
