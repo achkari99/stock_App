@@ -1,0 +1,161 @@
+{
+  "products": [
+    {
+      "id": "1762175038615",
+      "code": "ddfsfs",
+      "designation": "sdfsf",
+      "type": "physique",
+      "price": 54534,
+      "stockA": 75,
+      "stockB": 0,
+      "stockC": 0,
+      "reactiveStartDate": null,
+      "reactiveEndDate": null
+    },
+    {
+      "id": "1762177703537",
+      "code": "k1234",
+      "designation": "product1",
+      "type": "consommable",
+      "price": 1000,
+      "stockA": 195,
+      "stockB": 200,
+      "stockC": 200,
+      "reactiveStartDate": null,
+      "reactiveEndDate": null
+    }
+  ],
+  "sales": [
+    {
+      "id": "1762175058119",
+      "invoiceNumber": "FAC-2025-0001",
+      "date": "2025-11-03T13:04:18.119Z",
+      "depot": "A",
+      "clientId": "1762175049651",
+      "clientName": "sdff",
+      "items": [
+        {
+          "productId": "1762175038615",
+          "productCode": "ddfsfs",
+          "designation": "sdfsf",
+          "productType": "physique",
+          "quantity": 5,
+          "unitPrice": 54534,
+          "total": 272670,
+          "quantityPerDepot": {
+            "A": 5,
+            "B": 0,
+            "C": 0
+          },
+          "reactiveStartDate": null,
+          "reactiveEndDate": null
+        }
+      ],
+      "totalHT": 272670,
+      "tva": 54534,
+      "totalTTC": 327204
+    },
+    {
+      "id": "1762175535514",
+      "invoiceNumber": "FAC-2025-0002",
+      "date": "2025-11-03T13:12:15.514Z",
+      "depot": "A",
+      "clientId": "1762175049651",
+      "clientName": "sdff",
+      "items": [
+        {
+          "productId": "1762175038615",
+          "productCode": "ddfsfs",
+          "designation": "sdfsf",
+          "productType": "physique",
+          "quantity": 574,
+          "unitPrice": 54534,
+          "total": 31302516,
+          "quantityPerDepot": {
+            "A": 574,
+            "B": 0,
+            "C": 0
+          },
+          "reactiveStartDate": null,
+          "reactiveEndDate": null
+        }
+      ],
+      "totalHT": 31302516,
+      "tva": 6260503.2,
+      "totalTTC": 37563019.2
+    },
+    {
+      "id": "1762177743339",
+      "invoiceNumber": "FAC-2025-0003",
+      "date": "2025-11-03T13:49:03.339Z",
+      "depot": "A",
+      "clientId": "1762177732159",
+      "clientName": "mohamed",
+      "items": [
+        {
+          "productId": "1762177703537",
+          "productCode": "k1234",
+          "designation": "product1",
+          "productType": "consommable",
+          "quantity": 5,
+          "unitPrice": 1000,
+          "total": 5000,
+          "quantityPerDepot": {
+            "A": 5,
+            "B": 0,
+            "C": 0
+          },
+          "reactiveStartDate": null,
+          "reactiveEndDate": null
+        }
+      ],
+      "totalHT": 5000,
+      "tva": 1000,
+      "totalTTC": 6000
+    }
+  ],
+  "productTypes": [
+    "physique",
+    "reactif",
+    "consommable"
+  ],
+  "clients": [
+    {
+      "id": "1762175049651",
+      "name": "sdff",
+      "ice": "dsfsfdfsd",
+      "ifTva": "dsfsf",
+      "address": "sdfsf",
+      "phone": "sdfsfd",
+      "email": "fdss@SDSAD"
+    },
+    {
+      "id": "1762177732159",
+      "name": "mohamed",
+      "ice": "asdasd",
+      "ifTva": "asdad",
+      "address": "adasdd",
+      "phone": "dasds",
+      "email": "asdas@asdad"
+    },
+    {
+      "id": "1762177814472",
+      "name": "asdad",
+      "ice": "asdad",
+      "ifTva": "adad",
+      "address": "adad",
+      "phone": "asdada",
+      "email": "asdad@sasd"
+    },
+    {
+      "name": "asdsa",
+      "ice": "adad",
+      "ifTva": "adad",
+      "address": "asdad",
+      "phone": "adad",
+      "email": "ada@asdad",
+      "id": "dd844089-53b8-4bbb-a74a-6707d5652fd6"
+    }
+  ],
+  "invoiceCounter": 3
+}

@@ -1,7 +1,9 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "stock-zen-maroc",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Application de gestion de stock et facturation pour Stock Zen Maroc.",
+  "author": "Stock Zen Maroc",
   "type": "module",
   "main": "electron/main.mjs",
   "scripts": {
@@ -43,6 +45,7 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@supabase/supabase-js": "^2.46.0",
     "@tanstack/react-query": "^5.83.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -101,18 +104,9 @@
       "buildResources": "resources"
     },
     "win": {
-      "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg",
-      "category": "public.app-category.productivity"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility"
+      "target": "nsis",
+      "icon": "resources/app.ico",
+      "artifactName": "Stock-Zen-Maroc-${version}-Setup.${ext}"
     }
   }
 }

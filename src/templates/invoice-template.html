@@ -3,373 +3,251 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Facture &ndash; Laboratoire Zeroual Kawassim</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
-
+<title>Facture</title>
 <style>
-:root {
-  --brand: #932e50;
-  --brand-dark: #5b2233;
-  --accent: #9f3357;
-  --ink: #0f172a;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --pill: #f8f5f7;
-  --card: #ffffff;
-}
-
 * { box-sizing: border-box; }
-html, body {
-  height: 100%;
-  background: #f6f7fb;
-  color: var(--ink);
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
 body {
-  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   margin: 0;
+  font-family: "Arial", sans-serif;
+  color: #000;
+  background: #fff;
 }
-
 .invoice {
   width: 210mm;
-  min-height: 297mm;
-  padding: 18mm 18mm 16mm;
   margin: 0 auto;
-  background: var(--card);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(16,24,40,.08);
-  border-radius: 12px;
+  padding: 12mm 16mm;
 }
-
-.invoice::before,
-.invoice::after {
-  content: "";
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  height: 140mm;
-  background: radial-gradient(110mm 110mm at 10% 10%, rgba(124,35,65,.12) 0, rgba(124,35,65,.08) 30%, transparent 60%),
-              radial-gradient(140mm 140mm at 120% -30%, rgba(62,33,55,.14) 0, rgba(62,33,55,.10) 35%, transparent 70%);
-  z-index: 0;
+.invoice-header img,
+.invoice-footer img {
+  width: 100%;
+  height: auto;
+  display: block;
+  visibility: hidden;
 }
-.invoice::before { top: -90mm; transform: rotate(-4deg); }
-.invoice::after  {
-  bottom: -110mm; transform: rotate(3deg);
-  background: radial-gradient(120mm 120mm at -10% 120%, rgba(62,33,55,.12) 0, rgba(62,33,55,.08) 40%, transparent 70%),
-              radial-gradient(160mm 160mm at 105% 115%, rgba(124,35,65,.12) 0, rgba(124,35,65,.08) 35%, transparent 70%);
-}
-
-.header { position: relative; z-index: 1; }
-.header-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  align-items: start;
-}
-.brand {
+.section { margin-top: 18px; }
+.invoice-meta {
   display: flex;
-  gap: 14px;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 16px;
 }
-.brand img { height: 70px; width: auto; display: block; }
-.brand .brand-text {
-  line-height: 1.1;
-  color: var(--brand-dark);
-}
-.brand .brand-text .name {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: .2px;
-}
-.brand .brand-text .tagline {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: .85;
-  letter-spacing: .4px;
+.invoice-meta .title {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
-
-.titlebox { text-align: right; }
-.titlebox h1 {
-  margin: 0 0 16px 0;
-  font-size: 38px;
-  letter-spacing: .5px;
-  color: var(--brand-dark);
-}
-.meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
-  justify-items: end;
-  font-size: 12.5px;
-}
-.meta div { white-space: nowrap; }
-.meta .k {
-  color: var(--muted);
-  margin-right: 6px;
-  font-weight: 500;
-}
-
-.section {
-  position: relative;
-  z-index: 1;
-  margin-top: 22px;
-}
-
-.panel {
-  background: var(--pill);
-  border: 1px solid rgba(124,35,65,.12);
-  border-radius: 12px;
-  padding: 16px 18px;
-}
-.twocol {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.h {
+.invoice-meta .details {
+  text-align: right;
   font-size: 12px;
-  color: var(--brand-dark);
-  font-weight: 700;
-  letter-spacing: .8px;
+  line-height: 1.5;
+}
+.client-info {
+  font-size: 11px;
+  margin-top: 12px;
+}
+.client-info .columns {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.client-info .column {
+  flex: 1;
+}
+.client-info .column:first-child {
+  max-width: 60%;
+}
+.info-column .label,
+.client-info .label {
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.info-column .row,
+.client-info .row { margin-bottom: 6px; }
+.info-column .row:last-child,
+.client-info .row:last-child { margin-bottom: 0; }
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.items-table th,
+.items-table td {
+  border: 1px solid #000;
+  padding: 8px;
+  vertical-align: top;
+}
+.items-table th {
+  text-transform: uppercase;
+  font-size: 11px;
+  text-align: center;
+  background: #f3f3f3;
+}
+.items-table th:nth-child(2) {
+  text-align: left;
+}
+.items-table th:nth-child(1),
+.items-table td:nth-child(1) {
+  width: 90px;
+}
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: auto;
+}
+.items-table th:nth-child(3),
+.items-table td:nth-child(3) {
+  width: 70px;
+}
+.items-table th:nth-child(4),
+.items-table td:nth-child(4) {
+  width: 90px;
+}
+.items-table th:nth-child(5),
+.items-table td:nth-child(5) {
+  width: 110px;
+}
+.items-table .cell-center { text-align: center; }
+.items-table .cell-right { text-align: right; }
+.items-table .item-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.items-table .item-meta {
+  font-style: italic;
+  font-size: 11px;
+}
+.items-table .cell-empty {
+  text-align: center;
+  padding: 16px;
+  font-style: italic;
+}
+.summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 12px;
+  align-items: stretch;
+}
+.signature-box {
+  width: 220px;
+  border: 1px solid #000;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.signature-box .label {
+  font-weight: bold;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
-.kv {
-  font-size: 13.5px;
-  line-height: 1.55;
+.signature-box .placeholder {
+  flex: 1;
+  border-top: 1px dashed #000;
+  margin-top: 24px;
 }
-.kv .k {
-  color: var(--muted);
-  width: 140px;
-  display: inline-block;
-  font-weight: 500;
+.amount {
+  flex: 1;
+  border: 1px solid #000;
+  padding: 12px;
 }
-
-.table-wrap { margin-top: 18px; }
-table {
+.amount strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 14px;
+}
+.totals {
+  width: 220px;
+  border: 1px solid #000;
+}
+.totals table {
   width: 100%;
   border-collapse: collapse;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: #fff;
 }
-thead th {
-  background: linear-gradient(0deg, var(--brand) 0%, var(--brand-dark) 100%);
-  color: #ffffff;
-  text-align: left;
-  font-size: 12px;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  padding: 12px 14px;
+.totals td {
+  border-bottom: 1px solid #000;
+  padding: 8px;
 }
-tbody td {
-  padding: 12px 14px;
-  border-top: 1px solid var(--line);
-  vertical-align: top;
-  background: #ffffff;
+.totals tr:last-child td {
+  border-bottom: 0;
+  font-weight: bold;
 }
-tbody tr:nth-child(even) td { background: #fdfbfc; }
-.col-ref { width: 46%; }
-.col-qty { width: 12%; text-align: center; }
-.col-price, .col-total { width: 21%; text-align: right; }
-.designation {
-  font-weight: 600;
-  font-size: 13.5px;
-}
-.distribution {
-  margin-top: 4px;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: .2px;
-}
-.cell-center { text-align: center; }
-.cell-right {
+.totals td:last-child {
   text-align: right;
-  font-variant-numeric: tabular-nums;
 }
-
-.summary {
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 18px;
-  margin-top: 18px;
-  align-items: start;
-}
-.sum-note {
-  font-size: 13px;
-  line-height: 1.6;
-}
-.sum-note .note {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 12px;
-}
-.sum-card {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-  background: #ffffff;
-}
-.sum-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  padding: 12px 16px;
-  align-items: center;
-  border-top: 1px dashed #eceaf0;
-}
-.sum-row:first-child { border-top: 0; }
-.sum-row .k {
-  color: var(--muted);
-  font-size: 13px;
-}
-.sum-row .v {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.sum-row.total {
-  background: var(--pill);
-}
-.sum-row.total .v {
-  color: var(--brand-dark);
-  font-size: 16px;
-}
-
-.footer {
-  position: relative;
-  z-index: 1;
-  margin-top: 34px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12.5px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.footer .item {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.footer .item span {
-  display: inline-block;
-}
-.icon {
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  opacity: .7;
-}
-
+@page { size: A4; margin: 12mm; }
 @media print {
-  body { background: #ffffff; }
-  .invoice { box-shadow: none; border-radius: 0; }
+  body { background: #fff; }
+  .invoice {
+    width: auto;
+    margin: 0;
+    padding: 0;
+  }
+  .section { margin-top: 16px; }
 }
-
-@page { size: A4; margin: 14mm; }
 </style>
 </head>
 <body>
   <div class="invoice">
-    <section class="header">
-      <div class="header-row">
-        <div class="brand">
-          <img src="{{LOGO_DATA}}" alt="Laboratoire Zeroual Kawassim - Logo">
-          <div class="brand-text">
-            <div class="name">Laboratoire Zeroual Kawassim</div>
-            <div class="tagline">Analyses medicales &amp; diagnostics</div>
-          </div>
+    <div class="invoice-header">
+      <img src="{{HEADER_IMAGE}}" alt="En-tete de facture">
+    </div>
+    <div class="invoice-meta section">
+      <div class="title">Facture</div>
+      <div class="details">
+        <div>Facture N&deg;&nbsp;: {{INVOICE_NUMBER}}</div>
+        <div>Date&nbsp;: {{INVOICE_DATE}}</div>
+      </div>
+    </div>
+    <div class="client-info section">
+      <div class="columns">
+        <div class="column">
+          <div class="label">Client</div>
+          <div class="row"><strong>Nom / Raison soc.</strong><br>{{CLIENT_NAME}}</div>
+          <div class="row"><strong>Adresse</strong><br>{{CLIENT_ADDRESS}}</div>
         </div>
-        <div class="titlebox">
-          <h1>FACTURE</h1>
-          <div class="meta">
-            <div><span class="k">Facture N&deg;</span>{{INVOICE_NUMBER}}</div>
-            <div><span class="k">Tanger, le</span>{{INVOICE_DATE}}</div>
-          </div>
+        <div class="column">
+          <div class="row"><strong>ICE</strong><br>{{CLIENT_ICE}}</div>
+          <div class="row"><strong>T&eacute;l&eacute;phone</strong><br>{{CLIENT_PHONE}}</div>
+          <div class="row"><strong>Email</strong><br>{{CLIENT_EMAIL}}</div>
         </div>
       </div>
-    </section>
-
-    <section class="section">
-      <div class="twocol">
-        <div class="panel">
-          <div class="h">Payable par</div>
-          <div class="kv">
-            <div><span class="k">Nom / Raison soc.</span> {{CLIENT_NAME}}</div>
-            <div><span class="k">Adresse</span> {{CLIENT_ADDRESS}}</div>
-            <div><span class="k">ICE</span> {{CLIENT_ICE}}</div>
-            <div><span class="k">T&eacute;l&eacute;phone</span> {{CLIENT_PHONE}}</div>
-            <div><span class="k">Email</span> {{CLIENT_EMAIL}}</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="h">Coordonn&eacute;es bancaires</div>
-          <div class="kv">
-            <div><span class="k">ICE</span> {{BANK_ICE}}</div>
-            <div><span class="k">IF</span> {{BANK_IF}}</div>
-            <div><span class="k">TP</span> {{BANK_TP}}</div>
-            <div><span class="k">RIB</span> {{BANK_RIB}}</div>
-          </div>
-        </div>
+    </div>
+    <div class="section">
+      {{ITEM_TABLE}}
+    </div>
+    <div class="summary section">
+      <div class="signature-box">
+        <div class="label">Signature et cachet</div>
+        <div class="placeholder"></div>
       </div>
-    </section>
-
-    <section class="section table-wrap">
-      <table>
-        <thead>
+      <div class="amount">
+        <div>Arr&ecirc;t&eacute;e la pr&eacute;sente facture &agrave; la somme de&nbsp;:</div>
+        <strong>{{AMOUNT_IN_WORDS}}</strong>
+      </div>
+      <div class="totals">
+        <table>
           <tr>
-            <th class="col-ref">R&eacute;f&eacute;rence</th>
-            <th class="col-qty">Qt&eacute;</th>
-            <th class="col-price">Prix (MAD)</th>
-            <th class="col-total">Total (MAD)</th>
+            <td>Total HT</td>
+            <td>{{TOTAL_HT}}</td>
           </tr>
-        </thead>
-        <tbody>{{ITEM_ROWS}}</tbody>
-      </table>
-    </section>
-
-    <section class="section summary">
-      <div class="sum-note panel">
-        <div class="h">Arr&ecirc;t&eacute;e la pr&eacute;sente facture &agrave; la somme de&nbsp;:</div>
-        <div><strong>{{AMOUNT_IN_WORDS}}</strong></div>
-        <div class="note">
-          Conditions de paiement&nbsp;: 30 jours fin de mois &ndash; P&eacute;nalit&eacute;s de retard applicables selon conditions g&eacute;n&eacute;rales.
-        </div>
+          <tr>
+            <td>TVA</td>
+            <td>{{TOTAL_TVA}}</td>
+          </tr>
+          <tr>
+            <td>Total TTC</td>
+            <td>{{TOTAL_TTC}}</td>
+          </tr>
+        </table>
       </div>
-      <div class="sum-card">
-        <div class="sum-row">
-          <div class="k">Total HT</div>
-          <div class="v">{{TOTAL_HT}}</div>
-        </div>
-        <div class="sum-row">
-          <div class="k">TVA (20&thinsp;%)</div>
-          <div class="v">{{TOTAL_TVA}}</div>
-        </div>
-        <div class="sum-row total">
-          <div class="k">Total TTC</div>
-          <div class="v">{{TOTAL_TTC}}</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="footer">
-      <div class="item">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/></svg>
-        <span>{{COMPANY_ADDRESS}}</span>
-      </div>
-      <div class="item">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 3.23-8 5.02-8-5.02V6l8 5 8-5v1.23Z"/></svg>
-        <span>{{COMPANY_EMAIL}}</span>
-      </div>
-      
-    </section>
+    </div>
+    <div class="invoice-footer section">
+      <img src="{{FOOTER_IMAGE}}" alt="Pied de facture">
+    </div>
   </div>
 </body>
 </html>

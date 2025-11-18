@@ -1,0 +1,189 @@
+<div class="page-break"></div>
+<section class="delivery-note">
+  <style>
+    * { box-sizing: border-box; }
+    .page-break {
+      display: block;
+      page-break-before: always;
+    }
+    .delivery-note {
+      width: 210mm;
+      margin: 0 auto;
+      padding: 12mm 16mm;
+      font-family: "Arial", sans-serif;
+      color: #000;
+      background: #fff;
+    }
+    .delivery-note-header img,
+    .delivery-note-footer img {
+      width: 100%;
+      height: auto;
+      display: block;
+      visibility: hidden;
+    }
+    .section { margin-top: 18px; }
+    .note-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 16px;
+    }
+    .note-meta .title {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .note-meta .details {
+      text-align: right;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .client-info {
+      font-size: 11px;
+      margin-top: 12px;
+    }
+    .client-info .columns {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .client-info .column {
+      flex: 1;
+    }
+    .client-info .column:first-child {
+      max-width: 60%;
+    }
+    .client-info .label {
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 11px;
+    }
+    .items-table th,
+    .items-table td {
+      border: 1px solid #000;
+      padding: 8px;
+      vertical-align: top;
+    }
+    .items-table th {
+      text-transform: uppercase;
+      font-size: 11px;
+      text-align: center;
+      background: #f3f3f3;
+    }
+    .items-table th:nth-child(2) {
+      text-align: left;
+    }
+    .items-table th:nth-child(1),
+    .items-table td:nth-child(1) {
+      width: 90px;
+    }
+    .items-table th:nth-child(2),
+    .items-table td:nth-child(2) {
+      width: auto;
+    }
+    .items-table th:nth-child(3),
+    .items-table td:nth-child(3) {
+      width: 90px;
+    }
+    .items-table .item-name {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .items-table .item-meta {
+      font-style: italic;
+      font-size: 11px;
+      color: #555;
+    }
+    .items-table .cell-center { text-align: center; }
+    .items-table .cell-empty {
+      text-align: center;
+      padding: 16px;
+      font-style: italic;
+    }
+    .summary {
+      display: flex;
+      justify-content: flex-start;
+      gap: 24px;
+      font-size: 12px;
+      align-items: stretch;
+    }
+    .signature-box {
+      width: 220px;
+      border: 1px solid #000;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .signature-box .label {
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .signature-box .placeholder {
+      flex: 1;
+      border-top: 1px dashed #000;
+      margin-top: 24px;
+    }
+    @media print {
+      .page-break {
+        display: block;
+        page-break-before: always;
+      }
+      .section { margin-top: 16px; }
+    }
+  </style>
+  <div class="delivery-note-header">
+    <img src="{{HEADER_IMAGE}}" alt="En-tete">
+  </div>
+  <div class="note-meta section">
+    <div class="title">Bon de livraison</div>
+    <div class="details">
+      <div>Bon N&deg;&nbsp;: {{DELIVERY_NUMBER}}</div>
+      <div>Date&nbsp;: {{DELIVERY_DATE}}</div>
+    </div>
+  </div>
+  <div class="client-info section">
+    <div class="columns">
+      <div class="column">
+        <div class="label">Client</div>
+        <div class="row"><strong>Nom / Raison soc.</strong><br>{{CLIENT_NAME}}</div>
+        <div class="row"><strong>Adresse</strong><br>{{CLIENT_ADDRESS}}</div>
+      </div>
+      <div class="column">
+        <div class="row"><strong>Code client</strong><br>{{CLIENT_CODE}}</div>
+        <div class="row"><strong>T&eacute;l&eacute;phone</strong><br>{{CLIENT_PHONE}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Code produit</th>
+          <th>D&eacute;signation</th>
+          <th>Quantit&eacute;</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ITEM_ROWS}}
+      </tbody>
+    </table>
+  </div>
+  <div class="summary section">
+    <div class="signature-box">
+      <div class="label">Signature et cachet</div>
+      <div class="placeholder"></div>
+    </div>
+  </div>
+  <div class="delivery-note-footer section">
+    <img src="{{FOOTER_IMAGE}}" alt="Pied de page">
+  </div>
+</section>

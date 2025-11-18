@@ -1,17 +1,9 @@
 import rawTemplate from "./invoice-template.html?raw";
-import logoUrl from "@/assets/invoice-logo.png?url";
-import { Sale, Client, Depot, SaleItem } from "@/types";
-
-const COMPANY_INFO = {
-  address: "Place Souk de 61, Rue Tabari Résidence El Futuro, Tanger",
-  email: "contact@laboratoire-kawassim.com",
-  bankIce: "001234567890",
-  bankIf: "12345678",
-  bankTp: "1234567",
-  bankRib: "123 456 7890 1234567890123 45",
-};
-
-const depotOrder: Depot[] = ["A", "B", "C"];
+import headerImageUrl from "@/assets/invoice_header.jpg?url";
+import footerImageUrl from "@/assets/invoice_footer.jpg?url";
+import { Sale, Client, SaleItem } from "@/types";
+import { isReactiveType } from "@/lib/utils";
+import { COMPANY_INFO } from "./company-info";
 
 const escapeHtml = (value: string) =>
   value
@@ -32,71 +24,132 @@ const amountFormatter = new Intl.NumberFormat("fr-FR", {
   maximumFractionDigits: 2,
 });
 
-const currencyFormatter = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "MAD",
-  minimumFractionDigits: 2,
-});
-
 const replaceNarrowSpaces = (input: string) =>
   input.replace(/\u202F/g, " ").replace(/\u00A0/g, " ");
 
 const formatNumber = (value: number) => replaceNarrowSpaces(amountFormatter.format(value));
 
-const formatCurrency = (value: number) => replaceNarrowSpaces(currencyFormatter.format(value));
+const formatCurrency = (value: number) => `${formatNumber(value)} Dirhams`;
 
 const formatQuantity = (value: number) => (Number.isInteger(value) ? `${value}` : formatNumber(value));
 
 const resolveAssetUrl = (assetPath: string) => {
-  if (/^(data:|https?:)/i.test(assetPath)) {
+  if (/^(data:|https?:|file:)/i.test(assetPath)) {
     return assetPath;
   }
-  return new URL(assetPath, window.location.origin).toString();
+
+  try {
+    return new URL(assetPath, window.location.href).toString();
+  } catch (error) {
+    console.error("Failed to resolve asset URL", assetPath, error);
+    return assetPath;
+  }
 };
 
-const formatDistribution = (item: SaleItem, defaultDepot: Depot) => {
-  const distribution: Partial<Record<Depot, number>> =
-    item.quantityPerDepot ??
-    ({
-      [defaultDepot]: item.quantity,
-    } as Partial<Record<Depot, number>>);
-
-  const chunks = depotOrder
-    .map((depot) => {
-      const qty = distribution[depot] ?? 0;
-      return qty > 0 ? `${depot} : ${formatQuantity(qty)}` : null;
-    })
-    .filter(Boolean);
-
-  return chunks.length > 0 ? chunks.join(" | ") : "-";
+const formatReactivePeriod = (item: SaleItem) => {
+  if (!item.reactiveStartDate || !item.reactiveEndDate) {
+    return null;
+  }
+  const start = new Date(item.reactiveStartDate);
+  const end = new Date(item.reactiveEndDate);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return null;
+  }
+  return `Periode : ${start.toLocaleDateString("fr-FR")} au ${end.toLocaleDateString("fr-FR")}`;
 };
 
-const buildItemRows = (sale: Sale) => {
-  if (sale.items.length === 0) {
-    return `<tr><td colspan="4" style="padding:18px; text-align:center; color:#802742;">Aucun article ajouté à cette facture.</td></tr>`;
+const displayTypeLabel = (type: string) =>
+  isReactiveType(type) ? "Produit reactif" : `Type : ${type}`;
+
+export const formatInvoiceNumberDisplay = (invoiceNumber: string) => {
+  const parts = invoiceNumber.split("-");
+  if (
+    parts.length >= 3 &&
+    /^\d{4}$/.test(parts[parts.length - 2]) &&
+    /^\d+$/.test(parts[parts.length - 1])
+  ) {
+    const year = parts[parts.length - 2];
+    const sequence = parts[parts.length - 1];
+    return `${sequence}/${year}`;
   }
 
-  return sale.items
+  const match = invoiceNumber.match(/(\d{4})[-_/](\d+)$/);
+  if (match) {
+    const [, year, sequence] = match;
+    return `${sequence}/${year}`;
+  }
+
+  return invoiceNumber;
+};
+
+const buildItemsTable = (sale: Sale) => {
+  if (sale.items.length === 0) {
+    return `
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Code produit</th>
+            <th>Désignation</th>
+            <th>Quantite</th>
+            <th>P.U HT</th>
+            <th>Total HT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" class="cell-empty">Aucun article ajoute a cette facture.</td>
+          </tr>
+        </tbody>
+      </table>
+    `.trim();
+  }
+
+  const rows = sale.items
     .map((item) => {
-      const distribution = formatDistribution(item, sale.depot);
+      const descriptionParts: string[] = [`<div class="item-name">${escapeHtml(item.designation)}</div>`];
+      descriptionParts.push(`<div class="item-meta">${escapeHtml(displayTypeLabel(item.productType))}</div>`);
+
+      if (isReactiveType(item.productType)) {
+        const period = formatReactivePeriod(item);
+        if (period) {
+          descriptionParts.push(`<div class="item-meta">${escapeHtml(period)}</div>`);
+        }
+      }
+
+      const quantityLabel = isReactiveType(item.productType) ? "-" : formatQuantity(item.quantity);
 
       return `
         <tr>
-          <td>
-            <div class="designation">${escapeHtml(item.designation)}</div>
-          </td>
-          <td class="cell-center">${formatQuantity(item.quantity)}</td>
-          <td class="cell-right">${formatNumber(item.unitPrice)}</td>
-          <td class="cell-right">${formatNumber(item.total)}</td>
+          <td class="cell-center">${escapeHtml(item.productCode || "-")}</td>
+          <td>${descriptionParts.join("")}</td>
+          <td class="cell-center">${quantityLabel}</td>
+          <td class="cell-center">${formatNumber(item.unitPrice)}</td>
+          <td class="cell-center">${formatNumber(item.total)}</td>
         </tr>
       `;
     })
-    .join("")
-    .trim();
+    .join("");
+
+  return `
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Code produit</th>
+          <th>Désignation</th>
+          <th>Quantite</th>
+          <th>P.U HT</th>
+          <th>Total HT</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `.trim();
 };
 
 const UNITS = [
-  "zéro",
+  "zero",
   "un",
   "deux",
   "trois",
@@ -127,7 +180,7 @@ const tensWord = (tens: number) =>
     "soixante",
     "quatre-vingt",
     "quatre-vingt",
-  ][tens] ?? "";
+  ][tens];
 
 const convertBelowHundred = (value: number): string => {
   if (value < 17) {
@@ -224,21 +277,24 @@ const amountInWords = (value: number) => {
   return `${integerWords} ${dirhamsLabel} et ${centWords} ${centsLabel}`;
 };
 
-export const buildInvoiceHtml = (sale: Sale, client: Client) => {
+type BuildInvoiceOptions = {
+  appendContent?: string;
+};
+
+export const buildInvoiceHtml = (sale: Sale, client: Client, options: BuildInvoiceOptions = {}) => {
+  const invoiceNumberDisplay = formatInvoiceNumberDisplay(sale.invoiceNumber);
+
   const replacements: Record<string, string> = {
-    "{{LOGO_DATA}}": escapeHtml(resolveAssetUrl(logoUrl)),
-    "{{INVOICE_NUMBER}}": escapeHtml(sale.invoiceNumber),
+    "{{HEADER_IMAGE}}": escapeHtml(resolveAssetUrl(headerImageUrl)),
+    "{{FOOTER_IMAGE}}": escapeHtml(resolveAssetUrl(footerImageUrl)),
+    "{{INVOICE_NUMBER}}": escapeHtml(invoiceNumberDisplay),
     "{{INVOICE_DATE}}": escapeHtml(formatDate(sale.date)),
     "{{CLIENT_NAME}}": escapeHtml(client.name),
-    "{{CLIENT_ADDRESS}}": escapeHtml(client.address || "Adresse non communiquée"),
-    "{{CLIENT_ICE}}": escapeHtml(client.ice || "Non communiqué"),
-    "{{CLIENT_PHONE}}": escapeHtml(client.phone || "Non communiqué"),
-    "{{CLIENT_EMAIL}}": escapeHtml(client.email || "Non communiqué"),
-    "{{BANK_ICE}}": escapeHtml(COMPANY_INFO.bankIce),
-    "{{BANK_IF}}": escapeHtml(COMPANY_INFO.bankIf),
-    "{{BANK_TP}}": escapeHtml(COMPANY_INFO.bankTp),
-    "{{BANK_RIB}}": escapeHtml(COMPANY_INFO.bankRib),
-    "{{ITEM_ROWS}}": buildItemRows(sale),
+    "{{CLIENT_ADDRESS}}": escapeHtml(client.address || "Adresse non communiquee"),
+    "{{CLIENT_ICE}}": escapeHtml(client.ice || "Non communique"),
+    "{{CLIENT_PHONE}}": escapeHtml(client.phone || "Non communique"),
+    "{{CLIENT_EMAIL}}": escapeHtml(client.email || "Non communique"),
+    "{{ITEM_TABLE}}": buildItemsTable(sale),
     "{{TOTAL_HT}}": escapeHtml(formatCurrency(sale.totalHT)),
     "{{TOTAL_TVA}}": escapeHtml(formatCurrency(sale.tva)),
     "{{TOTAL_TTC}}": escapeHtml(formatCurrency(sale.totalTTC)),
@@ -254,5 +310,10 @@ export const buildInvoiceHtml = (sale: Sale, client: Client) => {
     html = html.replace(pattern, value);
   }
 
+  if (options.appendContent) {
+    html = html.replace("</body>", `${options.appendContent}\n</body>`);
+  }
+
   return html;
 };
+

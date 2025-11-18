@@ -1,4 +1,6 @@
-const { contextBridge } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// Expose a minimal safe API surface for renderer processes.
-contextBridge.exposeInMainWorld('electronAPI', {});
+contextBridge.exposeInMainWorld('electronAPI', {
+  loadData: () => ipcRenderer.sendSync('storage:load'),
+  saveData: (data) => ipcRenderer.send('storage:save', data),
+});
