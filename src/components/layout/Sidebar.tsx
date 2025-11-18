@@ -5,17 +5,21 @@ import {
   ShoppingCart, 
   History, 
   Settings, 
-  Warehouse 
+  Warehouse,
+  Truck,
+  ShoppingBag 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Dépôts", href: "/", icon: Warehouse },
+  { name: "D\u00e9p\u00f4ts", href: "/", icon: Warehouse },
   { name: "Produits", href: "/products", icon: Package },
   { name: "Clients", href: "/clients", icon: Users },
+  { name: "Fournisseurs", href: "/suppliers", icon: Truck },
+  { name: "Acheter", href: "/purchases", icon: ShoppingBag },
   { name: "Nouvelle vente", href: "/sale", icon: ShoppingCart },
   { name: "Historique", href: "/history", icon: History },
-  { name: "Paramètres", href: "/settings", icon: Settings },
+  { name: "Param\u00e8tres", href: "/settings", icon: Settings },
 ];
 
 export const Sidebar = () => {
@@ -49,3 +53,4 @@ export const Sidebar = () => {
     </div>
   );
 };
+

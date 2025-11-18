@@ -1,0 +1,10 @@
+{
+  "products": [],
+  "clients": [],
+  "sales": [],
+  "invoiceCounter": 5,
+  "productTypes": [
+    "physique",
+    "reactif"
+  ]
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +11,14 @@ import { Client } from "@/types";
 import { toast } from "sonner";
 
 const Clients = () => {
-  const { clients, updateData } = useApp();
+  const { clients, createClient, updateClient, deleteClient } = useApp();
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [formData, setFormData] = useState({
     name: "",
+    code: "",
     ice: "",
     ifTva: "",
     address: "",
@@ -24,38 +26,42 @@ const Clients = () => {
     email: "",
   });
 
-  const filteredClients = clients.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.ice.toLowerCase().includes(search.toLowerCase())
+  const filteredClients = useMemo(
+    () =>
+      clients.filter(
+        (client) =>
+          client.name.toLowerCase().includes(search.toLowerCase()) ||
+          client.ice.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [clients, search],
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (editingClient) {
-      updateData({
-        clients: clients.map((c) =>
-          c.id === editingClient.id ? { ...c, ...formData } : c
-        ),
-      });
-      toast.success("Client modifié avec succès");
-    } else {
-      const newClient: Client = {
-        id: Date.now().toString(),
-        ...formData,
-      };
-      updateData({ clients: [...clients, newClient] });
-      toast.success("Client ajouté avec succès");
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      if (editingClient) {
+        await updateClient({ id: editingClient.id, ...formData });
+        toast.success("Client modifié avec succès");
+      } else {
+        await createClient(formData);
+        toast.success("Client ajouté avec succès");
+      }
+      handleClose();
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement du client:", error);
+      toast.error("Impossible d'enregistrer le client.");
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    handleClose();
   };
 
   const handleEdit = (client: Client) => {
     setEditingClient(client);
     setFormData({
       name: client.name,
+      code: client.code ?? "",
       ice: client.ice,
       ifTva: client.ifTva,
       address: client.address,
@@ -65,10 +71,16 @@ const Clients = () => {
     setIsOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
-      updateData({ clients: clients.filter((c) => c.id !== id) });
+  const handleDelete = async (id: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
+      return;
+    }
+    try {
+      await deleteClient(id);
       toast.success("Client supprimé");
+    } catch (error) {
+      console.error("Erreur lors de la suppression du client:", error);
+      toast.error("Impossible de supprimer le client.");
     }
   };
 
@@ -77,6 +89,7 @@ const Clients = () => {
     setEditingClient(null);
     setFormData({
       name: "",
+      code: "",
       ice: "",
       ifTva: "",
       address: "",
@@ -90,9 +103,7 @@ const Clients = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Gestion des clients</h1>
-          <p className="text-muted-foreground">
-            Gérez votre base de clients
-          </p>
+          <p className="text-muted-foreground">Gérez votre base de clients</p>
         </div>
         <Button onClick={() => setIsOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -103,9 +114,7 @@ const Clients = () => {
       <Card>
         <CardHeader>
           <CardTitle>Liste des clients</CardTitle>
-          <CardDescription>
-            Consultez et modifiez les informations de vos clients
-          </CardDescription>
+          <CardDescription>Consultez et modifiez les informations de vos clients</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -114,7 +123,7 @@ const Clients = () => {
               <Input
                 placeholder="Rechercher par nom ou ICE..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
                 className="pl-8"
               />
             </div>
@@ -149,18 +158,10 @@ const Clients = () => {
                       <TableCell>{client.email}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(client)}
-                          >
+                          <Button variant="outline" size="sm" onClick={() => handleEdit(client)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(client.id)}
-                          >
+                          <Button variant="destructive" size="sm" onClick={() => handleDelete(client.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -177,31 +178,38 @@ const Clients = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>
-              {editingClient ? "Modifier le client" : "Ajouter un client"}
-            </DialogTitle>
-            <DialogDescription>
-              Remplissez les informations du client
-            </DialogDescription>
+            <DialogTitle>{editingClient ? "Modifier le client" : "Ajouter un client"}</DialogTitle>
+            <DialogDescription>Remplissez les informations du client</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
                 <Label htmlFor="name">Nom / Raison sociale *</Label>
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, name: event.target.value })}
                   required
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="code">Code client</Label>
+                <Input
+                  id="code"
+                  value={formData.code}
+                  onChange={(event) => setFormData({ ...formData, code: event.target.value })}
+                  placeholder="Ex: CLT-001"
+                />
+              </div>
+            </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="ice">ICE *</Label>
                   <Input
                     id="ice"
                     value={formData.ice}
-                    onChange={(e) => setFormData({ ...formData, ice: e.target.value })}
+                    onChange={(event) => setFormData({ ...formData, ice: event.target.value })}
                     required
                   />
                 </div>
@@ -210,7 +218,7 @@ const Clients = () => {
                   <Input
                     id="ifTva"
                     value={formData.ifTva}
-                    onChange={(e) => setFormData({ ...formData, ifTva: e.target.value })}
+                    onChange={(event) => setFormData({ ...formData, ifTva: event.target.value })}
                     required
                   />
                 </div>
@@ -220,7 +228,7 @@ const Clients = () => {
                 <Input
                   id="address"
                   value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  onChange={(event) => setFormData({ ...formData, address: event.target.value })}
                   required
                 />
               </div>
@@ -231,7 +239,7 @@ const Clients = () => {
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
                     required
                   />
                 </div>
@@ -241,7 +249,7 @@ const Clients = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(event) => setFormData({ ...formData, email: event.target.value })}
                     required
                   />
                 </div>
@@ -251,7 +259,7 @@ const Clients = () => {
               <Button type="button" variant="outline" onClick={handleClose}>
                 Annuler
               </Button>
-              <Button type="submit">
+              <Button type="submit" disabled={isSubmitting}>
                 {editingClient ? "Modifier" : "Ajouter"}
               </Button>
             </DialogFooter>

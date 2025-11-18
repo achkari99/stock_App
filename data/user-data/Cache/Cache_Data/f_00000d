@@ -1,0 +1,778 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Clients.tsx");import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+
+let prevRefreshReg;
+let prevRefreshSig;
+
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react-swc can't detect preamble. Something is wrong."
+    );
+  }
+
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+
+import __vite__cjsImport2_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=cf1f6935"; const _jsxDEV = __vite__cjsImport2_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=cf1f6935"; const useMemo = __vite__cjsImport3_react["useMemo"]; const useState = __vite__cjsImport3_react["useState"];
+import { useApp } from "/src/contexts/AppContext.tsx";
+import { Button } from "/src/components/ui/button.tsx";
+import { Input } from "/src/components/ui/input.tsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "/src/components/ui/table.tsx";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "/src/components/ui/dialog.tsx";
+import { Label } from "/src/components/ui/label.tsx";
+import { Plus, Edit, Trash2, Search } from "/node_modules/.vite/deps/lucide-react.js?v=cf1f6935";
+import { toast } from "/node_modules/.vite/deps/sonner.js?v=cf1f6935";
+const Clients = ()=>{
+    _s();
+    const { clients, createClient, updateClient, deleteClient } = useApp();
+    const [search, setSearch] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [editingClient, setEditingClient] = useState(null);
+    const [formData, setFormData] = useState({
+        name: "",
+        code: "",
+        ice: "",
+        ifTva: "",
+        address: "",
+        phone: "",
+        email: ""
+    });
+    const filteredClients = useMemo(()=>clients.filter((client)=>client.name.toLowerCase().includes(search.toLowerCase()) || client.ice.toLowerCase().includes(search.toLowerCase())), [
+        clients,
+        search
+    ]);
+    const handleSubmit = async (event)=>{
+        event.preventDefault();
+        setIsSubmitting(true);
+        try {
+            if (editingClient) {
+                await updateClient({
+                    id: editingClient.id,
+                    ...formData
+                });
+                toast.success("Client modifié avec succès");
+            } else {
+                await createClient(formData);
+                toast.success("Client ajouté avec succès");
+            }
+            handleClose();
+        } catch (error) {
+            console.error("Erreur lors de l'enregistrement du client:", error);
+            toast.error("Impossible d'enregistrer le client.");
+        } finally{
+            setIsSubmitting(false);
+        }
+    };
+    const handleEdit = (client)=>{
+        setEditingClient(client);
+        setFormData({
+            name: client.name,
+            code: client.code ?? "",
+            ice: client.ice,
+            ifTva: client.ifTva,
+            address: client.address,
+            phone: client.phone,
+            email: client.email
+        });
+        setIsOpen(true);
+    };
+    const handleDelete = async (id)=>{
+        if (!confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
+            return;
+        }
+        try {
+            await deleteClient(id);
+            toast.success("Client supprimé");
+        } catch (error) {
+            console.error("Erreur lors de la suppression du client:", error);
+            toast.error("Impossible de supprimer le client.");
+        }
+    };
+    const handleClose = ()=>{
+        setIsOpen(false);
+        setEditingClient(null);
+        setFormData({
+            name: "",
+            code: "",
+            ice: "",
+            ifTva: "",
+            address: "",
+            phone: "",
+            email: ""
+        });
+    };
+    return /*#__PURE__*/ _jsxDEV("div", {
+        className: "space-y-6",
+        children: [
+            /*#__PURE__*/ _jsxDEV("div", {
+                className: "flex items-center justify-between",
+                children: [
+                    /*#__PURE__*/ _jsxDEV("div", {
+                        children: [
+                            /*#__PURE__*/ _jsxDEV("h1", {
+                                className: "text-3xl font-bold",
+                                children: "Gestion des clients"
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 105,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ _jsxDEV("p", {
+                                className: "text-muted-foreground",
+                                children: "Gérez votre base de clients"
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 106,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                        lineNumber: 104,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ _jsxDEV(Button, {
+                        onClick: ()=>setIsOpen(true),
+                        children: [
+                            /*#__PURE__*/ _jsxDEV(Plus, {
+                                className: "mr-2 h-4 w-4"
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 109,
+                                columnNumber: 11
+                            }, this),
+                            "Ajouter un client"
+                        ]
+                    }, void 0, true, {
+                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                        lineNumber: 108,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                lineNumber: 103,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ _jsxDEV(Card, {
+                children: [
+                    /*#__PURE__*/ _jsxDEV(CardHeader, {
+                        children: [
+                            /*#__PURE__*/ _jsxDEV(CardTitle, {
+                                children: "Liste des clients"
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 116,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ _jsxDEV(CardDescription, {
+                                children: "Consultez et modifiez les informations de vos clients"
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 117,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                        lineNumber: 115,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ _jsxDEV(CardContent, {
+                        children: [
+                            /*#__PURE__*/ _jsxDEV("div", {
+                                className: "mb-4",
+                                children: /*#__PURE__*/ _jsxDEV("div", {
+                                    className: "relative",
+                                    children: [
+                                        /*#__PURE__*/ _jsxDEV(Search, {
+                                            className: "absolute left-2 top-2.5 h-4 w-4 text-muted-foreground"
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 122,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                            placeholder: "Rechercher par nom ou ICE...",
+                                            value: search,
+                                            onChange: (event)=>setSearch(event.target.value),
+                                            className: "pl-8"
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 123,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 121,
+                                    columnNumber: 13
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 120,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ _jsxDEV("div", {
+                                className: "rounded-md border",
+                                children: /*#__PURE__*/ _jsxDEV(Table, {
+                                    children: [
+                                        /*#__PURE__*/ _jsxDEV(TableHeader, {
+                                            children: /*#__PURE__*/ _jsxDEV(TableRow, {
+                                                children: [
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        children: "Nom / Raison sociale"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 136,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        children: "ICE"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 137,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        children: "IF/TVA"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 138,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        children: "Téléphone"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 139,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        children: "Email"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 140,
+                                                        columnNumber: 19
+                                                    }, this),
+                                                    /*#__PURE__*/ _jsxDEV(TableHead, {
+                                                        className: "text-right",
+                                                        children: "Actions"
+                                                    }, void 0, false, {
+                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                        lineNumber: 141,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                lineNumber: 135,
+                                                columnNumber: 17
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 134,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV(TableBody, {
+                                            children: filteredClients.length === 0 ? /*#__PURE__*/ _jsxDEV(TableRow, {
+                                                children: /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                    colSpan: 6,
+                                                    className: "text-center text-muted-foreground",
+                                                    children: "Aucun client trouvé"
+                                                }, void 0, false, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 147,
+                                                    columnNumber: 21
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                lineNumber: 146,
+                                                columnNumber: 19
+                                            }, this) : filteredClients.map((client)=>/*#__PURE__*/ _jsxDEV(TableRow, {
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            className: "font-medium",
+                                                            children: client.name
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 154,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            children: client.ice
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 155,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            children: client.ifTva
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 156,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            children: client.phone
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 157,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            children: client.email
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 158,
+                                                            columnNumber: 23
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(TableCell, {
+                                                            className: "text-right",
+                                                            children: /*#__PURE__*/ _jsxDEV("div", {
+                                                                className: "flex justify-end gap-2",
+                                                                children: [
+                                                                    /*#__PURE__*/ _jsxDEV(Button, {
+                                                                        variant: "outline",
+                                                                        size: "sm",
+                                                                        onClick: ()=>handleEdit(client),
+                                                                        children: /*#__PURE__*/ _jsxDEV(Edit, {
+                                                                            className: "h-4 w-4"
+                                                                        }, void 0, false, {
+                                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                                            lineNumber: 162,
+                                                                            columnNumber: 29
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                                        lineNumber: 161,
+                                                                        columnNumber: 27
+                                                                    }, this),
+                                                                    /*#__PURE__*/ _jsxDEV(Button, {
+                                                                        variant: "destructive",
+                                                                        size: "sm",
+                                                                        onClick: ()=>handleDelete(client.id),
+                                                                        children: /*#__PURE__*/ _jsxDEV(Trash2, {
+                                                                            className: "h-4 w-4"
+                                                                        }, void 0, false, {
+                                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                                            lineNumber: 165,
+                                                                            columnNumber: 29
+                                                                        }, this)
+                                                                    }, void 0, false, {
+                                                                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                                        lineNumber: 164,
+                                                                        columnNumber: 27
+                                                                    }, this)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                                lineNumber: 160,
+                                                                columnNumber: 25
+                                                            }, this)
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 159,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    ]
+                                                }, client.id, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 153,
+                                                    columnNumber: 21
+                                                }, this))
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 144,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 133,
+                                    columnNumber: 13
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                lineNumber: 132,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                        lineNumber: 119,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                lineNumber: 114,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ _jsxDEV(Dialog, {
+                open: isOpen,
+                onOpenChange: setIsOpen,
+                children: /*#__PURE__*/ _jsxDEV(DialogContent, {
+                    className: "sm:max-w-[600px]",
+                    children: [
+                        /*#__PURE__*/ _jsxDEV(DialogHeader, {
+                            children: [
+                                /*#__PURE__*/ _jsxDEV(DialogTitle, {
+                                    children: editingClient ? "Modifier le client" : "Ajouter un client"
+                                }, void 0, false, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 181,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ _jsxDEV(DialogDescription, {
+                                    children: "Remplissez les informations du client"
+                                }, void 0, false, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 182,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                            lineNumber: 180,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ _jsxDEV("form", {
+                            onSubmit: handleSubmit,
+                            children: [
+                                /*#__PURE__*/ _jsxDEV("div", {
+                                    className: "grid gap-4 py-4",
+                                    children: [
+                                        /*#__PURE__*/ _jsxDEV("div", {
+                                            className: "grid gap-4 md:grid-cols-2",
+                                            children: [
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "name",
+                                                            children: "Nom / Raison sociale *"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 188,
+                                                            columnNumber: 17
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "name",
+                                                            value: formData.name,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    name: event.target.value
+                                                                }),
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 189,
+                                                            columnNumber: 17
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 187,
+                                                    columnNumber: 15
+                                                }, this),
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "code",
+                                                            children: "Code client"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 197,
+                                                            columnNumber: 17
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "code",
+                                                            value: formData.code,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    code: event.target.value
+                                                                }),
+                                                            placeholder: "Ex: CLT-001"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 198,
+                                                            columnNumber: 17
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 196,
+                                                    columnNumber: 15
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 186,
+                                            columnNumber: 13
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV("div", {
+                                            className: "grid grid-cols-2 gap-4",
+                                            children: [
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "ice",
+                                                            children: "ICE *"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 208,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "ice",
+                                                            value: formData.ice,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    ice: event.target.value
+                                                                }),
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 209,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 207,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "ifTva",
+                                                            children: "IF/TVA *"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 217,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "ifTva",
+                                                            value: formData.ifTva,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    ifTva: event.target.value
+                                                                }),
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 218,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 216,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 206,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV("div", {
+                                            className: "grid gap-2",
+                                            children: [
+                                                /*#__PURE__*/ _jsxDEV(Label, {
+                                                    htmlFor: "address",
+                                                    children: "Adresse *"
+                                                }, void 0, false, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 227,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ _jsxDEV(Input, {
+                                                    id: "address",
+                                                    value: formData.address,
+                                                    onChange: (event)=>setFormData({
+                                                            ...formData,
+                                                            address: event.target.value
+                                                        }),
+                                                    required: true
+                                                }, void 0, false, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 228,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 226,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV("div", {
+                                            className: "grid grid-cols-2 gap-4",
+                                            children: [
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "phone",
+                                                            children: "Téléphone *"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 237,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "phone",
+                                                            type: "tel",
+                                                            value: formData.phone,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    phone: event.target.value
+                                                                }),
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 238,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 236,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ _jsxDEV("div", {
+                                                    className: "grid gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ _jsxDEV(Label, {
+                                                            htmlFor: "email",
+                                                            children: "Email *"
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 247,
+                                                            columnNumber: 19
+                                                        }, this),
+                                                        /*#__PURE__*/ _jsxDEV(Input, {
+                                                            id: "email",
+                                                            type: "email",
+                                                            value: formData.email,
+                                                            onChange: (event)=>setFormData({
+                                                                    ...formData,
+                                                                    email: event.target.value
+                                                                }),
+                                                            required: true
+                                                        }, void 0, false, {
+                                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                            lineNumber: 248,
+                                                            columnNumber: 19
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                                    lineNumber: 246,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 235,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 185,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ _jsxDEV(DialogFooter, {
+                                    children: [
+                                        /*#__PURE__*/ _jsxDEV(Button, {
+                                            type: "button",
+                                            variant: "outline",
+                                            onClick: handleClose,
+                                            children: "Annuler"
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 259,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ _jsxDEV(Button, {
+                                            type: "submit",
+                                            disabled: isSubmitting,
+                                            children: editingClient ? "Modifier" : "Ajouter"
+                                        }, void 0, false, {
+                                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                            lineNumber: 262,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                                    lineNumber: 258,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                            lineNumber: 184,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                    lineNumber: 179,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+                lineNumber: 178,
+                columnNumber: 7
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx",
+        lineNumber: 102,
+        columnNumber: 5
+    }, this);
+};
+_s(Clients, "IcETA+3xQIDV2dyTa5nwOI89NL8=", false, function() {
+    return [
+        useApp
+    ];
+});
+_c = Clients;
+export default Clients;
+var _c;
+$RefreshReg$(_c, "Clients");
+
+
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+
+
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/simoa/OneDrive/Documents/stock/stock-zen-maroc/src/pages/Clients.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkNsaWVudHMudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZU1lbW8sIHVzZVN0YXRlIH0gZnJvbSBcInJlYWN0XCI7XG5pbXBvcnQgeyB1c2VBcHAgfSBmcm9tIFwiQC9jb250ZXh0cy9BcHBDb250ZXh0XCI7XG5pbXBvcnQgeyBCdXR0b24gfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2J1dHRvblwiO1xuaW1wb3J0IHsgSW5wdXQgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2lucHV0XCI7XG5pbXBvcnQgeyBDYXJkLCBDYXJkQ29udGVudCwgQ2FyZERlc2NyaXB0aW9uLCBDYXJkSGVhZGVyLCBDYXJkVGl0bGUgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2NhcmRcIjtcbmltcG9ydCB7IFRhYmxlLCBUYWJsZUJvZHksIFRhYmxlQ2VsbCwgVGFibGVIZWFkLCBUYWJsZUhlYWRlciwgVGFibGVSb3cgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL3RhYmxlXCI7XG5pbXBvcnQgeyBEaWFsb2csIERpYWxvZ0NvbnRlbnQsIERpYWxvZ0Rlc2NyaXB0aW9uLCBEaWFsb2dGb290ZXIsIERpYWxvZ0hlYWRlciwgRGlhbG9nVGl0bGUgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2RpYWxvZ1wiO1xuaW1wb3J0IHsgTGFiZWwgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2xhYmVsXCI7XG5pbXBvcnQgeyBQbHVzLCBFZGl0LCBUcmFzaDIsIFNlYXJjaCB9IGZyb20gXCJsdWNpZGUtcmVhY3RcIjtcbmltcG9ydCB7IENsaWVudCB9IGZyb20gXCJAL3R5cGVzXCI7XG5pbXBvcnQgeyB0b2FzdCB9IGZyb20gXCJzb25uZXJcIjtcblxuY29uc3QgQ2xpZW50cyA9ICgpID0+IHtcbiAgY29uc3QgeyBjbGllbnRzLCBjcmVhdGVDbGllbnQsIHVwZGF0ZUNsaWVudCwgZGVsZXRlQ2xpZW50IH0gPSB1c2VBcHAoKTtcbiAgY29uc3QgW3NlYXJjaCwgc2V0U2VhcmNoXSA9IHVzZVN0YXRlKFwiXCIpO1xuICBjb25zdCBbaXNPcGVuLCBzZXRJc09wZW5dID0gdXNlU3RhdGUoZmFsc2UpO1xuICBjb25zdCBbaXNTdWJtaXR0aW5nLCBzZXRJc1N1Ym1pdHRpbmddID0gdXNlU3RhdGUoZmFsc2UpO1xuICBjb25zdCBbZWRpdGluZ0NsaWVudCwgc2V0RWRpdGluZ0NsaWVudF0gPSB1c2VTdGF0ZTxDbGllbnQgfCBudWxsPihudWxsKTtcbiAgY29uc3QgW2Zvcm1EYXRhLCBzZXRGb3JtRGF0YV0gPSB1c2VTdGF0ZSh7XG4gICAgbmFtZTogXCJcIixcbiAgICBjb2RlOiBcIlwiLFxuICAgIGljZTogXCJcIixcbiAgICBpZlR2YTogXCJcIixcbiAgICBhZGRyZXNzOiBcIlwiLFxuICAgIHBob25lOiBcIlwiLFxuICAgIGVtYWlsOiBcIlwiLFxuICB9KTtcblxuICBjb25zdCBmaWx0ZXJlZENsaWVudHMgPSB1c2VNZW1vKFxuICAgICgpID0+XG4gICAgICBjbGllbnRzLmZpbHRlcihcbiAgICAgICAgKGNsaWVudCkgPT5cbiAgICAgICAgICBjbGllbnQubmFtZS50b0xvd2VyQ2FzZSgpLmluY2x1ZGVzKHNlYXJjaC50b0xvd2VyQ2FzZSgpKSB8fFxuICAgICAgICAgIGNsaWVudC5pY2UudG9Mb3dlckNhc2UoKS5pbmNsdWRlcyhzZWFyY2gudG9Mb3dlckNhc2UoKSksXG4gICAgICApLFxuICAgIFtjbGllbnRzLCBzZWFyY2hdLFxuICApO1xuXG4gIGNvbnN0IGhhbmRsZVN1Ym1pdCA9IGFzeW5jIChldmVudDogUmVhY3QuRm9ybUV2ZW50KSA9PiB7XG4gICAgZXZlbnQucHJldmVudERlZmF1bHQoKTtcbiAgICBzZXRJc1N1Ym1pdHRpbmcodHJ1ZSk7XG5cbiAgICB0cnkge1xuICAgICAgaWYgKGVkaXRpbmdDbGllbnQpIHtcbiAgICAgICAgYXdhaXQgdXBkYXRlQ2xpZW50KHsgaWQ6IGVkaXRpbmdDbGllbnQuaWQsIC4uLmZvcm1EYXRhIH0pO1xuICAgICAgICB0b2FzdC5zdWNjZXNzKFwiQ2xpZW50IG1vZGlmacOpIGF2ZWMgc3VjY8Ooc1wiKTtcbiAgICAgIH0gZWxzZSB7XG4gICAgICAgIGF3YWl0IGNyZWF0ZUNsaWVudChmb3JtRGF0YSk7XG4gICAgICAgIHRvYXN0LnN1Y2Nlc3MoXCJDbGllbnQgYWpvdXTDqSBhdmVjIHN1Y2PDqHNcIik7XG4gICAgICB9XG4gICAgICBoYW5kbGVDbG9zZSgpO1xuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICBjb25zb2xlLmVycm9yKFwiRXJyZXVyIGxvcnMgZGUgbCdlbnJlZ2lzdHJlbWVudCBkdSBjbGllbnQ6XCIsIGVycm9yKTtcbiAgICAgIHRvYXN0LmVycm9yKFwiSW1wb3NzaWJsZSBkJ2VucmVnaXN0cmVyIGxlIGNsaWVudC5cIik7XG4gICAgfSBmaW5hbGx5IHtcbiAgICAgIHNldElzU3VibWl0dGluZyhmYWxzZSk7XG4gICAgfVxuICB9O1xuXG4gIGNvbnN0IGhhbmRsZUVkaXQgPSAoY2xpZW50OiBDbGllbnQpID0+IHtcbiAgICBzZXRFZGl0aW5nQ2xpZW50KGNsaWVudCk7XG4gICAgc2V0Rm9ybURhdGEoe1xuICAgICAgbmFtZTogY2xpZW50Lm5hbWUsXG4gICAgICBjb2RlOiBjbGllbnQuY29kZSA/PyBcIlwiLFxuICAgICAgaWNlOiBjbGllbnQuaWNlLFxuICAgICAgaWZUdmE6IGNsaWVudC5pZlR2YSxcbiAgICAgIGFkZHJlc3M6IGNsaWVudC5hZGRyZXNzLFxuICAgICAgcGhvbmU6IGNsaWVudC5waG9uZSxcbiAgICAgIGVtYWlsOiBjbGllbnQuZW1haWwsXG4gICAgfSk7XG4gICAgc2V0SXNPcGVuKHRydWUpO1xuICB9O1xuXG4gIGNvbnN0IGhhbmRsZURlbGV0ZSA9IGFzeW5jIChpZDogc3RyaW5nKSA9PiB7XG4gICAgaWYgKCFjb25maXJtKFwiw4p0ZXMtdm91cyBzw7tyIGRlIHZvdWxvaXIgc3VwcHJpbWVyIGNlIGNsaWVudCA/XCIpKSB7XG4gICAgICByZXR1cm47XG4gICAgfVxuICAgIHRyeSB7XG4gICAgICBhd2FpdCBkZWxldGVDbGllbnQoaWQpO1xuICAgICAgdG9hc3Quc3VjY2VzcyhcIkNsaWVudCBzdXBwcmltw6lcIik7XG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgIGNvbnNvbGUuZXJyb3IoXCJFcnJldXIgbG9ycyBkZSBsYSBzdXBwcmVzc2lvbiBkdSBjbGllbnQ6XCIsIGVycm9yKTtcbiAgICAgIHRvYXN0LmVycm9yKFwiSW1wb3NzaWJsZSBkZSBzdXBwcmltZXIgbGUgY2xpZW50LlwiKTtcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlQ2xvc2UgPSAoKSA9PiB7XG4gICAgc2V0SXNPcGVuKGZhbHNlKTtcbiAgICBzZXRFZGl0aW5nQ2xpZW50KG51bGwpO1xuICAgIHNldEZvcm1EYXRhKHtcbiAgICAgIG5hbWU6IFwiXCIsXG4gICAgICBjb2RlOiBcIlwiLFxuICAgICAgaWNlOiBcIlwiLFxuICAgICAgaWZUdmE6IFwiXCIsXG4gICAgICBhZGRyZXNzOiBcIlwiLFxuICAgICAgcGhvbmU6IFwiXCIsXG4gICAgICBlbWFpbDogXCJcIixcbiAgICB9KTtcbiAgfTtcblxuICByZXR1cm4gKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS02XCI+XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlblwiPlxuICAgICAgICA8ZGl2PlxuICAgICAgICAgIDxoMSBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGRcIj5HZXN0aW9uIGRlcyBjbGllbnRzPC9oMT5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5Hw6lyZXogdm90cmUgYmFzZSBkZSBjbGllbnRzPC9wPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPEJ1dHRvbiBvbkNsaWNrPXsoKSA9PiBzZXRJc09wZW4odHJ1ZSl9PlxuICAgICAgICAgIDxQbHVzIGNsYXNzTmFtZT1cIm1yLTIgaC00IHctNFwiIC8+XG4gICAgICAgICAgQWpvdXRlciB1biBjbGllbnRcbiAgICAgICAgPC9CdXR0b24+XG4gICAgICA8L2Rpdj5cblxuICAgICAgPENhcmQ+XG4gICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgIDxDYXJkVGl0bGU+TGlzdGUgZGVzIGNsaWVudHM8L0NhcmRUaXRsZT5cbiAgICAgICAgICA8Q2FyZERlc2NyaXB0aW9uPkNvbnN1bHRleiBldCBtb2RpZmlleiBsZXMgaW5mb3JtYXRpb25zIGRlIHZvcyBjbGllbnRzPC9DYXJkRGVzY3JpcHRpb24+XG4gICAgICAgIDwvQ2FyZEhlYWRlcj5cbiAgICAgICAgPENhcmRDb250ZW50PlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibWItNFwiPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyZWxhdGl2ZVwiPlxuICAgICAgICAgICAgICA8U2VhcmNoIGNsYXNzTmFtZT1cImFic29sdXRlIGxlZnQtMiB0b3AtMi41IGgtNCB3LTQgdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCIgLz5cbiAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJSZWNoZXJjaGVyIHBhciBub20gb3UgSUNFLi4uXCJcbiAgICAgICAgICAgICAgICB2YWx1ZT17c2VhcmNofVxuICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZXZlbnQpID0+IHNldFNlYXJjaChldmVudC50YXJnZXQudmFsdWUpfVxuICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInBsLThcIlxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvdW5kZWQtbWQgYm9yZGVyXCI+XG4gICAgICAgICAgICA8VGFibGU+XG4gICAgICAgICAgICAgIDxUYWJsZUhlYWRlcj5cbiAgICAgICAgICAgICAgICA8VGFibGVSb3c+XG4gICAgICAgICAgICAgICAgICA8VGFibGVIZWFkPk5vbSAvIFJhaXNvbiBzb2NpYWxlPC9UYWJsZUhlYWQ+XG4gICAgICAgICAgICAgICAgICA8VGFibGVIZWFkPklDRTwvVGFibGVIZWFkPlxuICAgICAgICAgICAgICAgICAgPFRhYmxlSGVhZD5JRi9UVkE8L1RhYmxlSGVhZD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZUhlYWQ+VMOpbMOpcGhvbmU8L1RhYmxlSGVhZD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZUhlYWQ+RW1haWw8L1RhYmxlSGVhZD5cbiAgICAgICAgICAgICAgICAgIDxUYWJsZUhlYWQgY2xhc3NOYW1lPVwidGV4dC1yaWdodFwiPkFjdGlvbnM8L1RhYmxlSGVhZD5cbiAgICAgICAgICAgICAgICA8L1RhYmxlUm93PlxuICAgICAgICAgICAgICA8L1RhYmxlSGVhZGVyPlxuICAgICAgICAgICAgICA8VGFibGVCb2R5PlxuICAgICAgICAgICAgICAgIHtmaWx0ZXJlZENsaWVudHMubGVuZ3RoID09PSAwID8gKFxuICAgICAgICAgICAgICAgICAgPFRhYmxlUm93PlxuICAgICAgICAgICAgICAgICAgICA8VGFibGVDZWxsIGNvbFNwYW49ezZ9IGNsYXNzTmFtZT1cInRleHQtY2VudGVyIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgIEF1Y3VuIGNsaWVudCB0cm91dsOpXG4gICAgICAgICAgICAgICAgICAgIDwvVGFibGVDZWxsPlxuICAgICAgICAgICAgICAgICAgPC9UYWJsZVJvdz5cbiAgICAgICAgICAgICAgICApIDogKFxuICAgICAgICAgICAgICAgICAgZmlsdGVyZWRDbGllbnRzLm1hcCgoY2xpZW50KSA9PiAoXG4gICAgICAgICAgICAgICAgICAgIDxUYWJsZVJvdyBrZXk9e2NsaWVudC5pZH0+XG4gICAgICAgICAgICAgICAgICAgICAgPFRhYmxlQ2VsbCBjbGFzc05hbWU9XCJmb250LW1lZGl1bVwiPntjbGllbnQubmFtZX08L1RhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgICA8VGFibGVDZWxsPntjbGllbnQuaWNlfTwvVGFibGVDZWxsPlxuICAgICAgICAgICAgICAgICAgICAgIDxUYWJsZUNlbGw+e2NsaWVudC5pZlR2YX08L1RhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgICA8VGFibGVDZWxsPntjbGllbnQucGhvbmV9PC9UYWJsZUNlbGw+XG4gICAgICAgICAgICAgICAgICAgICAgPFRhYmxlQ2VsbD57Y2xpZW50LmVtYWlsfTwvVGFibGVDZWxsPlxuICAgICAgICAgICAgICAgICAgICAgIDxUYWJsZUNlbGwgY2xhc3NOYW1lPVwidGV4dC1yaWdodFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGp1c3RpZnktZW5kIGdhcC0yXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b24gdmFyaWFudD1cIm91dGxpbmVcIiBzaXplPVwic21cIiBvbkNsaWNrPXsoKSA9PiBoYW5kbGVFZGl0KGNsaWVudCl9PlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxFZGl0IGNsYXNzTmFtZT1cImgtNCB3LTRcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPEJ1dHRvbiB2YXJpYW50PVwiZGVzdHJ1Y3RpdmVcIiBzaXplPVwic21cIiBvbkNsaWNrPXsoKSA9PiBoYW5kbGVEZWxldGUoY2xpZW50LmlkKX0+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPFRyYXNoMiBjbGFzc05hbWU9XCJoLTQgdy00XCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8L1RhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICAgICAgPC9UYWJsZVJvdz5cbiAgICAgICAgICAgICAgICAgICkpXG4gICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgPC9UYWJsZUJvZHk+XG4gICAgICAgICAgICA8L1RhYmxlPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgPC9DYXJkPlxuXG4gICAgICA8RGlhbG9nIG9wZW49e2lzT3Blbn0gb25PcGVuQ2hhbmdlPXtzZXRJc09wZW59PlxuICAgICAgICA8RGlhbG9nQ29udGVudCBjbGFzc05hbWU9XCJzbTptYXgtdy1bNjAwcHhdXCI+XG4gICAgICAgICAgPERpYWxvZ0hlYWRlcj5cbiAgICAgICAgICAgIDxEaWFsb2dUaXRsZT57ZWRpdGluZ0NsaWVudCA/IFwiTW9kaWZpZXIgbGUgY2xpZW50XCIgOiBcIkFqb3V0ZXIgdW4gY2xpZW50XCJ9PC9EaWFsb2dUaXRsZT5cbiAgICAgICAgICAgIDxEaWFsb2dEZXNjcmlwdGlvbj5SZW1wbGlzc2V6IGxlcyBpbmZvcm1hdGlvbnMgZHUgY2xpZW50PC9EaWFsb2dEZXNjcmlwdGlvbj5cbiAgICAgICAgICA8L0RpYWxvZ0hlYWRlcj5cbiAgICAgICAgICA8Zm9ybSBvblN1Ym1pdD17aGFuZGxlU3VibWl0fT5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBnYXAtNCBweS00XCI+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ2FwLTQgbWQ6Z3JpZC1jb2xzLTJcIj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdhcC0yXCI+XG4gICAgICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJuYW1lXCI+Tm9tIC8gUmFpc29uIHNvY2lhbGUgKjwvTGFiZWw+XG4gICAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgICBpZD1cIm5hbWVcIlxuICAgICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLm5hbWV9XG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXRGb3JtRGF0YSh7IC4uLmZvcm1EYXRhLCBuYW1lOiBldmVudC50YXJnZXQudmFsdWUgfSl9XG4gICAgICAgICAgICAgICAgICByZXF1aXJlZFxuICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ2FwLTJcIj5cbiAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImNvZGVcIj5Db2RlIGNsaWVudDwvTGFiZWw+XG4gICAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgICBpZD1cImNvZGVcIlxuICAgICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmNvZGV9XG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXRGb3JtRGF0YSh7IC4uLmZvcm1EYXRhLCBjb2RlOiBldmVudC50YXJnZXQudmFsdWUgfSl9XG4gICAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIkV4OiBDTFQtMDAxXCJcbiAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTIgZ2FwLTRcIj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ2FwLTJcIj5cbiAgICAgICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwiaWNlXCI+SUNFICo8L0xhYmVsPlxuICAgICAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgICAgIGlkPVwiaWNlXCJcbiAgICAgICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmljZX1cbiAgICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0Rm9ybURhdGEoeyAuLi5mb3JtRGF0YSwgaWNlOiBldmVudC50YXJnZXQudmFsdWUgfSl9XG4gICAgICAgICAgICAgICAgICAgIHJlcXVpcmVkXG4gICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBnYXAtMlwiPlxuICAgICAgICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJpZlR2YVwiPklGL1RWQSAqPC9MYWJlbD5cbiAgICAgICAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICAgICAgICBpZD1cImlmVHZhXCJcbiAgICAgICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmlmVHZhfVxuICAgICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXRGb3JtRGF0YSh7IC4uLmZvcm1EYXRhLCBpZlR2YTogZXZlbnQudGFyZ2V0LnZhbHVlIH0pfVxuICAgICAgICAgICAgICAgICAgICByZXF1aXJlZFxuICAgICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBnYXAtMlwiPlxuICAgICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwiYWRkcmVzc1wiPkFkcmVzc2UgKjwvTGFiZWw+XG4gICAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgICBpZD1cImFkZHJlc3NcIlxuICAgICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmFkZHJlc3N9XG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXRGb3JtRGF0YSh7IC4uLmZvcm1EYXRhLCBhZGRyZXNzOiBldmVudC50YXJnZXQudmFsdWUgfSl9XG4gICAgICAgICAgICAgICAgICByZXF1aXJlZFxuICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTIgZ2FwLTRcIj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ2FwLTJcIj5cbiAgICAgICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwicGhvbmVcIj5Uw6lsw6lwaG9uZSAqPC9MYWJlbD5cbiAgICAgICAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICAgICAgICBpZD1cInBob25lXCJcbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cInRlbFwiXG4gICAgICAgICAgICAgICAgICAgIHZhbHVlPXtmb3JtRGF0YS5waG9uZX1cbiAgICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0Rm9ybURhdGEoeyAuLi5mb3JtRGF0YSwgcGhvbmU6IGV2ZW50LnRhcmdldC52YWx1ZSB9KX1cbiAgICAgICAgICAgICAgICAgICAgcmVxdWlyZWRcbiAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdhcC0yXCI+XG4gICAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImVtYWlsXCI+RW1haWwgKjwvTGFiZWw+XG4gICAgICAgICAgICAgICAgICA8SW5wdXRcbiAgICAgICAgICAgICAgICAgICAgaWQ9XCJlbWFpbFwiXG4gICAgICAgICAgICAgICAgICAgIHR5cGU9XCJlbWFpbFwiXG4gICAgICAgICAgICAgICAgICAgIHZhbHVlPXtmb3JtRGF0YS5lbWFpbH1cbiAgICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0Rm9ybURhdGEoeyAuLi5mb3JtRGF0YSwgZW1haWw6IGV2ZW50LnRhcmdldC52YWx1ZSB9KX1cbiAgICAgICAgICAgICAgICAgICAgcmVxdWlyZWRcbiAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8RGlhbG9nRm9vdGVyPlxuICAgICAgICAgICAgICA8QnV0dG9uIHR5cGU9XCJidXR0b25cIiB2YXJpYW50PVwib3V0bGluZVwiIG9uQ2xpY2s9e2hhbmRsZUNsb3NlfT5cbiAgICAgICAgICAgICAgICBBbm51bGVyXG4gICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICA8QnV0dG9uIHR5cGU9XCJzdWJtaXRcIiBkaXNhYmxlZD17aXNTdWJtaXR0aW5nfT5cbiAgICAgICAgICAgICAgICB7ZWRpdGluZ0NsaWVudCA/IFwiTW9kaWZpZXJcIiA6IFwiQWpvdXRlclwifVxuICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgIDwvRGlhbG9nRm9vdGVyPlxuICAgICAgICAgIDwvZm9ybT5cbiAgICAgICAgPC9EaWFsb2dDb250ZW50PlxuICAgICAgPC9EaWFsb2c+XG4gICAgPC9kaXY+XG4gICk7XG59O1xuXG5leHBvcnQgZGVmYXVsdCBDbGllbnRzO1xuIl0sIm5hbWVzIjpbInVzZU1lbW8iLCJ1c2VTdGF0ZSIsInVzZUFwcCIsIkJ1dHRvbiIsIklucHV0IiwiQ2FyZCIsIkNhcmRDb250ZW50IiwiQ2FyZERlc2NyaXB0aW9uIiwiQ2FyZEhlYWRlciIsIkNhcmRUaXRsZSIsIlRhYmxlIiwiVGFibGVCb2R5IiwiVGFibGVDZWxsIiwiVGFibGVIZWFkIiwiVGFibGVIZWFkZXIiLCJUYWJsZVJvdyIsIkRpYWxvZyIsIkRpYWxvZ0NvbnRlbnQiLCJEaWFsb2dEZXNjcmlwdGlvbiIsIkRpYWxvZ0Zvb3RlciIsIkRpYWxvZ0hlYWRlciIsIkRpYWxvZ1RpdGxlIiwiTGFiZWwiLCJQbHVzIiwiRWRpdCIsIlRyYXNoMiIsIlNlYXJjaCIsInRvYXN0IiwiQ2xpZW50cyIsImNsaWVudHMiLCJjcmVhdGVDbGllbnQiLCJ1cGRhdGVDbGllbnQiLCJkZWxldGVDbGllbnQiLCJzZWFyY2giLCJzZXRTZWFyY2giLCJpc09wZW4iLCJzZXRJc09wZW4iLCJpc1N1Ym1pdHRpbmciLCJzZXRJc1N1Ym1pdHRpbmciLCJlZGl0aW5nQ2xpZW50Iiwic2V0RWRpdGluZ0NsaWVudCIsImZvcm1EYXRhIiwic2V0Rm9ybURhdGEiLCJuYW1lIiwiY29kZSIsImljZSIsImlmVHZhIiwiYWRkcmVzcyIsInBob25lIiwiZW1haWwiLCJmaWx0ZXJlZENsaWVudHMiLCJmaWx0ZXIiLCJjbGllbnQiLCJ0b0xvd2VyQ2FzZSIsImluY2x1ZGVzIiwiaGFuZGxlU3VibWl0IiwiZXZlbnQiLCJwcmV2ZW50RGVmYXVsdCIsImlkIiwic3VjY2VzcyIsImhhbmRsZUNsb3NlIiwiZXJyb3IiLCJjb25zb2xlIiwiaGFuZGxlRWRpdCIsImhhbmRsZURlbGV0ZSIsImNvbmZpcm0iLCJkaXYiLCJjbGFzc05hbWUiLCJoMSIsInAiLCJvbkNsaWNrIiwicGxhY2Vob2xkZXIiLCJ2YWx1ZSIsIm9uQ2hhbmdlIiwidGFyZ2V0IiwibGVuZ3RoIiwiY29sU3BhbiIsIm1hcCIsInZhcmlhbnQiLCJzaXplIiwib3BlbiIsIm9uT3BlbkNoYW5nZSIsImZvcm0iLCJvblN1Ym1pdCIsImh0bWxGb3IiLCJyZXF1aXJlZCIsInR5cGUiLCJkaXNhYmxlZCJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUEsU0FBU0EsT0FBTyxFQUFFQyxRQUFRLFFBQVEsUUFBUTtBQUMxQyxTQUFTQyxNQUFNLFFBQVEsd0JBQXdCO0FBQy9DLFNBQVNDLE1BQU0sUUFBUSx5QkFBeUI7QUFDaEQsU0FBU0MsS0FBSyxRQUFRLHdCQUF3QjtBQUM5QyxTQUFTQyxJQUFJLEVBQUVDLFdBQVcsRUFBRUMsZUFBZSxFQUFFQyxVQUFVLEVBQUVDLFNBQVMsUUFBUSx1QkFBdUI7QUFDakcsU0FBU0MsS0FBSyxFQUFFQyxTQUFTLEVBQUVDLFNBQVMsRUFBRUMsU0FBUyxFQUFFQyxXQUFXLEVBQUVDLFFBQVEsUUFBUSx3QkFBd0I7QUFDdEcsU0FBU0MsTUFBTSxFQUFFQyxhQUFhLEVBQUVDLGlCQUFpQixFQUFFQyxZQUFZLEVBQUVDLFlBQVksRUFBRUMsV0FBVyxR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
